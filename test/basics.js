@@ -213,8 +213,12 @@
 
 			// drain
 			dpump
-				.drain('pid1')
+				// try to drain from NO SPECIFIED pipe
+				.drain()
 				.then(function () {
+
+					// the default drained pipe is the first.
+
 					// check modifications on source
 					source.should.eql({
 						// drained value from d1
@@ -231,7 +235,25 @@
 				.then(function () {
 
 
+					// drain from specific pipe
+					return dpump.drain('pid2');
 
+				})
+				.then(function () {
+
+					source.should.eql({
+						// drained from d2
+						key1: 'd2-v1',
+						// unmodified since source
+						key2: 'v2',
+						// drained from d2
+						key3: 'd2-v3',
+						// unmodified since drain from d1
+						key4: 'd1-v4'
+					});
+
+				})
+				.then(function () {
 
 					// create more pipes
 					pipes.pid3 = dpump.pipe('pid3', {
@@ -246,11 +268,6 @@
 						key4: 'dest4K4',
 					})
 					.to(d4);
-
-					// try to drain from NO SPECIFIED pipe
-					(function () {
-						dpump.drain()
-					}).should.throw();
 
 					// set a main pipe id
 					dpump.setDrainingPipe('pid3');

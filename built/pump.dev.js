@@ -37,6 +37,9 @@ define('__pump/pipe',['require','exports','module','lodash'],function (require, 
 		// [4] store
 		// [4.1] if this is the first pipe of the pump,
 		//       set it as the drainingPipe
+		if (_.size(this.pipes) === 0) {
+			this.setDrainingPipe(id);
+		}
 		this.pipes[id] = _pipe;
 
 		return _pipe;
