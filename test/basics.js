@@ -74,6 +74,14 @@
 					should(d1['dest1K3']).be.undefined;
 					d1['dest1K4'].should.eql('v4');
 
+					d2.dest2K1.should.eql('v1');
+					should(d2.dest2K2).be.undefined;
+					d2.dest2K3.should.eql('v3');
+					should(d2.dest2K4).be.undefined;
+
+					d3.should.eql({});
+					d4.should.eql({});
+
 
 				})
 				.then(function () {

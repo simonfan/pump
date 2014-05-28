@@ -2,12 +2,12 @@ YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [],
     "modules": [
-        "Pump"
+        "pump"
     ],
     "allModules": [
         {
-            "displayName": "Pump",
-            "name": "Pump",
+            "displayName": "pump",
+            "name": "pump",
             "description": "AMD and CJS module."
         }
     ]

@@ -1,11 +1,11 @@
-//     Pump
+//     pump
 //     (c) simonfan
-//     Pump is licensed under the MIT terms.
+//     pump is licensed under the MIT terms.
 
 /**
  * AMD and CJS module.
  *
- * @module Pump
+ * @module pump
  */
 
 /* jshint ignore:start */
