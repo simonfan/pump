@@ -217,6 +217,28 @@ define('pump',['require','exports','module','subject','lodash','pipe','./__pump/
 				this.pipe(id, lines);
 			}, this);
 		},
+
+		from: function pumpFrom(source) {
+			this.source = source;
+
+			// update all pipes sources as well
+			_.each(this.pipes, function (pipe) {
+
+				pipe.from(source);
+
+			});
+
+			return this;
+		},
+
+		get: function get(object, prop) {
+			return object[prop];
+		},
+
+		set: function set(object, prop, value) {
+			object[prop] = value;
+			return this;
+		},
 	});
 
 	pump.assignProto(require('./__pump/pipe'))
