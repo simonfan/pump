@@ -12,19 +12,19 @@ define('__pump/pipe',['require','exports','module','lodash'],function (require, 
 	 */
 	exports.addPipe = function addPipe() {
 
-		var id, lines, options;
+		var id, map, options;
 
 		// [1] parse out arguments
 		if (_.isString(arguments[0])) {
-			// arguments = [id, lines, options]
+			// arguments = [id, map, options]
 			id      = arguments[0];
-			lines   = arguments[1];
+			map     = arguments[1];
 			options = arguments[2] || {};
 
 		} else {
-			// arguments = [] || [lines] || [lines, options]
+			// arguments = [] || [map] || [map, options]
 			id      = _.uniqueId('pipe');
-			lines   = arguments[0];
+			map     = arguments[0];
 			options = arguments[1] || {};
 		}
 
@@ -32,7 +32,7 @@ define('__pump/pipe',['require','exports','module','lodash'],function (require, 
 		options.source = this.source;
 
 		// [3] create pipe
-		var _pipe = this._buildPipe(lines, options);
+		var _pipe = this._buildPipe(map, options);
 
 		// [4] store
 		this.pipes[id] = _pipe;
@@ -86,8 +86,15 @@ define('__pump/streams',['require','exports','module','lodash','q'],function (re
 	var _ = require('lodash'),
 		q = require('q');
 
-
-	function execPipeStream(action, pipeIds) {
+	/**
+	 * Picks the pipes and invokes their .pump method.
+	 *
+	 * @param  {[type]} pipeIds    [description]
+	 * @param  {[type]} properties [description]
+	 * @param  {[type]} force      [description]
+	 * @return {[type]}            [description]
+	 */
+	exports.pump = function pumpPump(pipeIds, properties, force) {
 
 		// pipes that should run the action
 		var pipes;
@@ -107,18 +114,51 @@ define('__pump/streams',['require','exports','module','lodash','q'],function (re
 
 		// invoke pump on all pipes and return the promise
 		var results = _.map(pipes, function (pipe) {
-
-			return pipe[action]();
+			// NO CACHING HERE,
+			// CACHE IS DONE AT PIPE-LEVEL
+			return pipe.pump(properties, force);
 		});
 
 		return q.all(results);
-
 	}
 
-	exports.pump = _.partial(execPipeStream, 'pump');
 
-	exports.drain = _.partial(execPipeStream, 'drain');
+	/**
+	 * The default pipe id for draining
+	 *
+	 * @type {String}
+	 */
+	exports.mainPipeId = 'main-pipe';
 
+	/**
+	 * Drains from a specific pipe.
+	 *
+	 * @param  {[type]} pipeId [description]
+	 * @return {[type]}        [description]
+	 */
+	exports.drain = function pumpDrain(pipeId, properties, force) {
+		pipeId = _.isUndefined(pipeId) ? this.mainPipeId : pipeId;
+
+		// only drain from a single pipe.
+		var pipe = this.pipes[pipeId];
+
+		if (!pipe) {
+			throw new Error('Pipe "' + pipeId + '" not found.')
+		}
+
+		// NO CACHING HERE,
+		// CACHE IS DONE AT PIPE-LEVEL
+		return pipe.drain(properties, force);
+	};
+
+	/**
+	 * Sets data onto source
+	 * and pumps data into pipes.
+	 *
+	 * @param  {[type]} data    [description]
+	 * @param  {[type]} pipeIds [description]
+	 * @return {[type]}         [description]
+	 */
 	exports.inject = function inject(data, pipeIds) {
 
 
@@ -133,6 +173,8 @@ define('__pump/streams',['require','exports','module','lodash','q'],function (re
 		// [1] SET all data onto the SOURCE
 		var srcSetRes = _.map(data, function (value, key) {
 
+			// NO CACHING HERE,
+			// CACHE IS DONE AT PIPE-LEVEL
 			return set.call(this, this.source, key, value);
 
 		}, this);

@@ -1,7 +1,7 @@
 {
   "name": "pump",
   "main": "built/pump.js",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Some module...",
   "dependencies": {
     "subject": "~0.5.8",

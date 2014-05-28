@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/__pump/pipe.js - pump</title>
+    <title>src/__pump/streams.js - pump</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -82,7 +82,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/__pump/pipe.js</h1>
+                        <h1 class="file-heading">File: src/__pump/streams.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -93,75 +93,114 @@ if (typeof define !== &#x27;function&#x27;) { var define = require(&#x27;amdefin
 define(function (require, exports, module) {
 
 
-	var _ = require(&#x27;lodash&#x27;);
+	var _ = require(&#x27;lodash&#x27;),
+		q = require(&#x27;q&#x27;);
 
 	/**
-	 * Creates a pipe on this
+	 * Picks the pipes and invokes their .pump method.
+	 *
+	 * @param  {[type]} pipeIds    [description]
+	 * @param  {[type]} properties [description]
+	 * @param  {[type]} force      [description]
+	 * @return {[type]}            [description]
 	 */
-	exports.addPipe = function addPipe() {
+	exports.pump = function pumpPump(pipeIds, properties, force) {
 
-		var id, map, options;
+		// pipes that should run the action
+		var pipes;
 
-		// [1] parse out arguments
-		if (_.isString(arguments[0])) {
-			// arguments = [id, map, options]
-			id      = arguments[0];
-			map     = arguments[1];
-			options = arguments[2] || {};
+		// pick pipes if pipeIds was defined
+		if (pipeIds) {
+			// pipeIds must be an array
+			pipeIds = _.isArray(pipeIds) ? pipeIds : [pipeIds];
 
-		} else {
-			// arguments = [] || [map] || [map, options]
-			id      = _.uniqueId(&#x27;pipe&#x27;);
-			map     = arguments[0];
-			options = arguments[1] || {};
-		}
-
-		// [2] set source to the pump&#x27;s source
-		options.source = this.source;
-
-		// [3] create pipe
-		var _pipe = this._buildPipe(map, options);
-
-		// [4] store
-		this.pipes[id] = _pipe;
-
-		return _pipe;
-	};
-	exports.pipe = exports.addPipe;
-
-
-	exports.removePipe = function removePipe(criteria, context) {
-
-		if (_.isFunction(criteria)) {
-			// function criteria
-			_.each(this.pipes, function (pipe, pid) {
-
-				if (criteria.call(context, pipe, pid)) {
-
-					delete this.pipes[pid];
-				}
-
-			}, this);
-
-		} else if (_.isArray(criteria)) {
-			// array of ids
-			_.each(criteria, function (pipe, pid) {
-
-				if (_.contains(criteria, pid)) {
-					delete this.pipes[pid];
-				}
-
-			}, this);
+			// pick
+			pipes = _.pick(this.pipes, pipeIds);
 
 		} else {
-			// single id.
-			delete this.pipes[criteria];
-
+			// pipes are all pipes available.
+			pipes = this.pipes;
 		}
 
-		return this;
+		// invoke pump on all pipes and return the promise
+		var results = _.map(pipes, function (pipe) {
+			// NO CACHING HERE,
+			// CACHE IS DONE AT PIPE-LEVEL
+			return pipe.pump(properties, force);
+		});
+
+		return q.all(results);
+	}
+
+
+	/**
+	 * The default pipe id for draining
+	 *
+	 * @type {String}
+	 */
+	exports.mainPipeId = &#x27;main-pipe&#x27;;
+
+	/**
+	 * Drains from a specific pipe.
+	 *
+	 * @param  {[type]} pipeId [description]
+	 * @return {[type]}        [description]
+	 */
+	exports.drain = function pumpDrain(pipeId, properties, force) {
+		pipeId = _.isUndefined(pipeId) ? this.mainPipeId : pipeId;
+
+		// only drain from a single pipe.
+		var pipe = this.pipes[pipeId];
+
+		if (!pipe) {
+			throw new Error(&#x27;Pipe &quot;&#x27; + pipeId + &#x27;&quot; not found.&#x27;)
+		}
+
+		// NO CACHING HERE,
+		// CACHE IS DONE AT PIPE-LEVEL
+		return pipe.drain(properties, force);
 	};
-	exports.unpipe = exports.removePipe;
+
+	/**
+	 * Sets data onto source
+	 * and pumps data into pipes.
+	 *
+	 * @param  {[type]} data    [description]
+	 * @param  {[type]} pipeIds [description]
+	 * @return {[type]}         [description]
+	 */
+	exports.inject = function inject(data, pipeIds) {
+
+
+		var set = this.srcSet || this.set;
+
+
+		// [0] throw error if there is no source in the pump object.
+		if (!this.source) {
+			throw new Error(&#x27;No source for pump&#x27;);
+		}
+
+		// [1] SET all data onto the SOURCE
+		var srcSetRes = _.map(data, function (value, key) {
+
+			// NO CACHING HERE,
+			// CACHE IS DONE AT PIPE-LEVEL
+			return set.call(this, this.source, key, value);
+
+		}, this);
+
+
+		// [2] wait for all srcSets
+		return q.all(srcSetRes)
+			// [2.1] then invoke pump on success
+			//       wrap in a method in order to guarantee
+			//       pump is invoked with NO ARGUMENTS
+			.then(_.bind(function() { this.pump(pipeIds); }, this))
+			// [2.2] or throw error
+			.fail(function (e) { throw e; });
+	};
+
+
 });
 
     </pre>

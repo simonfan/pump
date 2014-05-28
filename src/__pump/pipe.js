@@ -12,19 +12,19 @@ define(function (require, exports, module) {
 	 */
 	exports.addPipe = function addPipe() {
 
-		var id, lines, options;
+		var id, map, options;
 
 		// [1] parse out arguments
 		if (_.isString(arguments[0])) {
-			// arguments = [id, lines, options]
+			// arguments = [id, map, options]
 			id      = arguments[0];
-			lines   = arguments[1];
+			map     = arguments[1];
 			options = arguments[2] || {};
 
 		} else {
-			// arguments = [] || [lines] || [lines, options]
+			// arguments = [] || [map] || [map, options]
 			id      = _.uniqueId('pipe');
-			lines   = arguments[0];
+			map     = arguments[0];
 			options = arguments[1] || {};
 		}
 
@@ -32,7 +32,7 @@ define(function (require, exports, module) {
 		options.source = this.source;
 
 		// [3] create pipe
-		var _pipe = this._buildPipe(lines, options);
+		var _pipe = this._buildPipe(map, options);
 
 		// [4] store
 		this.pipes[id] = _pipe;
