@@ -4,15 +4,29 @@
         "version": "0.0.0"
     },
     "files": {
-        "src/__pump/pipe.js": {
-            "name": "src/__pump/pipe.js",
+        "src/__pump/streams/drain.js": {
+            "name": "src/__pump/streams/drain.js",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
-        "src/__pump/streams.js": {
-            "name": "src/__pump/streams.js",
+        "src/__pump/streams/inject.js": {
+            "name": "src/__pump/streams/inject.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/__pump/streams/pump.js": {
+            "name": "src/__pump/streams/pump.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/__pump/pipe.js": {
+            "name": "src/__pump/pipe.js",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -44,14 +58,90 @@
     "classes": {},
     "classitems": [
         {
-            "file": "src/__pump/pipe.js",
-            "line": 10,
-            "description": "Creates a pipe on this",
+            "file": "src/__pump/streams/drain.js",
+            "line": 12,
+            "description": "This method is called if no pipe is found for draining.\nReturns the pipe from which the properties should be drained from.\nBy default returns the first pipe",
+            "type": "{String}",
             "class": ""
         },
         {
-            "file": "src/__pump/streams.js",
-            "line": 11,
+            "file": "src/__pump/streams/drain.js",
+            "line": 21,
+            "description": "[_drainingPipe description]",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "properties",
+                    "description": "[description]",
+                    "type": "[type]"
+                }
+            ],
+            "return": {
+                "description": "[description]",
+                "type": "[type]"
+            },
+            "class": ""
+        },
+        {
+            "file": "src/__pump/streams/drain.js",
+            "line": 42,
+            "description": "Drains from a specific pipe.",
+            "params": [
+                {
+                    "name": "pipeId",
+                    "description": "[description]",
+                    "type": "[type]"
+                }
+            ],
+            "return": {
+                "description": "[description]",
+                "type": "[type]"
+            },
+            "class": ""
+        },
+        {
+            "file": "src/__pump/streams/drain.js",
+            "line": 61,
+            "description": "Set a pipe to drain from.",
+            "params": [
+                {
+                    "name": "pipe_id_or_pipe_getter",
+                    "description": "[description]",
+                    "type": "[type]"
+                }
+            ],
+            "return": {
+                "description": "[description]",
+                "type": "[type]"
+            },
+            "class": ""
+        },
+        {
+            "file": "src/__pump/streams/inject.js",
+            "line": 12,
+            "description": "Sets data onto source\nand pumps data into pipes.",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "[description]",
+                    "type": "[type]"
+                },
+                {
+                    "name": "pipeIds",
+                    "description": "[description]",
+                    "type": "[type]"
+                }
+            ],
+            "return": {
+                "description": "[description]",
+                "type": "[type]"
+            },
+            "class": ""
+        },
+        {
+            "file": "src/__pump/streams/pump.js",
+            "line": 12,
             "description": "Picks the pipes and invokes their .pump method.",
             "params": [
                 {
@@ -77,41 +167,23 @@
             "class": ""
         },
         {
-            "file": "src/__pump/streams.js",
-            "line": 48,
-            "description": "The default pipe id for draining",
-            "type": "{String}",
+            "file": "src/__pump/pipe.js",
+            "line": 10,
+            "description": "Creates a pipe on this",
             "class": ""
         },
         {
-            "file": "src/__pump/streams.js",
-            "line": 55,
-            "description": "Drains from a specific pipe.",
+            "file": "src/__pump/pipe.js",
+            "line": 46,
+            "description": "Removes the pipe.",
             "params": [
                 {
-                    "name": "pipeId",
-                    "description": "[description]",
-                    "type": "[type]"
-                }
-            ],
-            "return": {
-                "description": "[description]",
-                "type": "[type]"
-            },
-            "class": ""
-        },
-        {
-            "file": "src/__pump/streams.js",
-            "line": 76,
-            "description": "Sets data onto source\nand pumps data into pipes.",
-            "params": [
-                {
-                    "name": "data",
+                    "name": "criteria",
                     "description": "[description]",
                     "type": "[type]"
                 },
                 {
-                    "name": "pipeIds",
+                    "name": "context",
                     "description": "[description]",
                     "type": "[type]"
                 }
@@ -175,24 +247,36 @@
     ],
     "warnings": [
         {
+            "message": "Missing item type\nThis method is called if no pipe is found for draining.\nReturns the pipe from which the properties should be drained from.\nBy default returns the first pipe",
+            "line": " src/__pump/streams/drain.js:12"
+        },
+        {
+            "message": "Missing item type\n[_drainingPipe description]",
+            "line": " src/__pump/streams/drain.js:21"
+        },
+        {
+            "message": "Missing item type\nDrains from a specific pipe.",
+            "line": " src/__pump/streams/drain.js:42"
+        },
+        {
+            "message": "Missing item type\nSet a pipe to drain from.",
+            "line": " src/__pump/streams/drain.js:61"
+        },
+        {
+            "message": "Missing item type\nSets data onto source\nand pumps data into pipes.",
+            "line": " src/__pump/streams/inject.js:12"
+        },
+        {
+            "message": "Missing item type\nPicks the pipes and invokes their .pump method.",
+            "line": " src/__pump/streams/pump.js:12"
+        },
+        {
             "message": "Missing item type\nCreates a pipe on this",
             "line": " src/__pump/pipe.js:10"
         },
         {
-            "message": "Missing item type\nPicks the pipes and invokes their .pump method.",
-            "line": " src/__pump/streams.js:11"
-        },
-        {
-            "message": "Missing item type\nThe default pipe id for draining",
-            "line": " src/__pump/streams.js:48"
-        },
-        {
-            "message": "Missing item type\nDrains from a specific pipe.",
-            "line": " src/__pump/streams.js:55"
-        },
-        {
-            "message": "Missing item type\nSets data onto source\nand pumps data into pipes.",
-            "line": " src/__pump/streams.js:76"
+            "message": "Missing item type\nRemoves the pipe.",
+            "line": " src/__pump/pipe.js:46"
         },
         {
             "message": "Missing item type\nProperties that are getter setters\nfor all pipes generated by this pump.",

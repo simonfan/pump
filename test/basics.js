@@ -202,7 +202,7 @@
 			var pipes = this.pipes;
 
 
-			// check that source has its own propertis
+			// check that source has its own properties
 			source.should.eql({
 				key1: 'v1',
 				key2: 'v2',
@@ -247,8 +247,13 @@
 					})
 					.to(d4);
 
+					// try to drain from NO SPECIFIED pipe
+					(function () {
+						dpump.drain()
+					}).should.throw();
+
 					// set a main pipe id
-					dpump.mainPipeId = 'pid3';
+					dpump.setDrainingPipe('pid3');
 
 					// drain from no explicit pipe,
 					// let default pipe id be used

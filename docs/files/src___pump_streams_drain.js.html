@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/__pump/pipe.js - pump</title>
+    <title>src/__pump/streams/drain.js - pump</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -82,7 +82,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/__pump/pipe.js</h1>
+                        <h1 class="file-heading">File: src/__pump/streams/drain.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -91,85 +91,73 @@ if (typeof define !== &#x27;function&#x27;) { var define = require(&#x27;amdefin
 /* jshint ignore:end */
 
 define(function (require, exports, module) {
+
 	&#x27;use strict&#x27;;
 
-	var _ = require(&#x27;lodash&#x27;);
+	var _ = require(&#x27;lodash&#x27;),
+		q = require(&#x27;q&#x27;);
 
 	/**
-	 * Creates a pipe on this
-	 */
-	exports.addPipe = function addPipe() {
-
-		var id, map, options;
-
-		// [1] parse out arguments
-		if (_.isString(arguments[0])) {
-			// arguments = [id, map, options]
-			id      = arguments[0];
-			map     = arguments[1];
-			options = arguments[2] || {};
-
-		} else {
-			// arguments = [] || [map] || [map, options]
-			id      = _.uniqueId(&#x27;pipe&#x27;);
-			map     = arguments[0];
-			options = arguments[1] || {};
-		}
-
-		// [2] set source to the pump&#x27;s source
-		options.source = this.source;
-
-		// [3] create pipe
-		var _pipe = this._buildPipe(map, options);
-
-		// [4] store
-		// [4.1] if this is the first pipe of the pump,
-		//       set it as the drainingPipe
-		this.pipes[id] = _pipe;
-
-		return _pipe;
-	};
-	exports.pipe = exports.addPipe;
-
-	/**
-	 * Removes the pipe.
+	 * This method is called if no pipe is found for draining.
+	 * Returns the pipe from which the properties should be drained from.
+	 * By default returns the first pipe
 	 *
-	 * @param  {[type]} criteria [description]
-	 * @param  {[type]} context  [description]
-	 * @return {[type]}          [description]
+	 * @type {String}
 	 */
-	exports.removePipe = function removePipe(criteria, context) {
+	exports.drainingPipe = void(0);
 
-		if (_.isFunction(criteria)) {
-			// function criteria
-			_.each(this.pipes, function (pipe, pid) {
+	/**
+	 * [_drainingPipe description]
+	 * @private
+	 * @param  {[type]} properties [description]
+	 * @return {[type]}            [description]
+	 */
+	function _drainingPipe(properties) {
+		if (_.isString(this.drainingPipe)) {
+			// this.drainingPipe = &#x27;pipe-id&#x27;
+			return this.pipes[this.drainingPipe];
 
-				if (criteria.call(context, pipe, pid)) {
+		} else if (_.isFunction(this.drainingPipe)) {
+			// this.drainingPipe = function () {}
+			return this.drainingPipe(properties);
 
-					delete this.pipes[pid];
-				}
-
-			}, this);
-
-		} else if (_.isArray(criteria)) {
-			// array of ids
-			_.each(criteria, function (pipe, pid) {
-
-				if (_.contains(criteria, pid)) {
-					delete this.pipes[pid];
-				}
-
-			}, this);
-
-		} else {
-			// single id.
-			delete this.pipes[criteria];
-
+		} else if (_.isObject(this.drainingPipe)) {
+			// this.drainingPipe = pipe
+			return this.drainingPipe;
 		}
+	}
+
+	/**
+	 * Drains from a specific pipe.
+	 *
+	 * @param  {[type]} pipeId [description]
+	 * @return {[type]}        [description]
+	 */
+	exports.drain = function pumpDrain(pipeId, properties, force) {
+		// only drain from a single pipe.
+		var pipe = this.pipes[pipeId] || _drainingPipe.call(this, properties);
+
+		if (!pipe) {
+			throw new Error(&#x27;Pipe &quot;&#x27; + pipeId + &#x27;&quot; not found.&#x27;);
+		}
+
+		// NO CACHING HERE,
+		// CACHE IS DONE AT PIPE-LEVEL
+		return pipe.drain(properties, force);
+	};
+
+	/**
+	 * Set a pipe to drain from.
+	 *
+	 * @param  {[type]} pipe_id_or_pipe_getter [description]
+	 * @return {[type]}        [description]
+	 */
+	exports.setDrainingPipe = function setDrainingPipe(pipe_id_or_pipe_getter) {
+		this.drainingPipe = pipe_id_or_pipe_getter;
 
 		return this;
 	};
-	exports.unpipe = exports.removePipe;
+
 });
 
     </pre>

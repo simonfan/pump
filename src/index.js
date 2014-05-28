@@ -89,5 +89,7 @@ define(function (require, exports, module) {
 	});
 
 	pump.assignProto(require('./__pump/pipe'))
-		.assignProto(require('./__pump/streams'));
+		.assignProto(require('./__pump/streams/pump'))
+		.assignProto(require('./__pump/streams/drain'))
+		.assignProto(require('./__pump/streams/inject'));
 });

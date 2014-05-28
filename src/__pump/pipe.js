@@ -3,7 +3,7 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 /* jshint ignore:end */
 
 define(function (require, exports, module) {
-
+	'use strict';
 
 	var _ = require('lodash');
 
@@ -35,13 +35,21 @@ define(function (require, exports, module) {
 		var _pipe = this._buildPipe(map, options);
 
 		// [4] store
+		// [4.1] if this is the first pipe of the pump,
+		//       set it as the drainingPipe
 		this.pipes[id] = _pipe;
 
 		return _pipe;
 	};
 	exports.pipe = exports.addPipe;
 
-
+	/**
+	 * Removes the pipe.
+	 *
+	 * @param  {[type]} criteria [description]
+	 * @param  {[type]} context  [description]
+	 * @return {[type]}          [description]
+	 */
 	exports.removePipe = function removePipe(criteria, context) {
 
 		if (_.isFunction(criteria)) {

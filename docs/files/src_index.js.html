@@ -177,7 +177,9 @@ define(function (require, exports, module) {
 	});
 
 	pump.assignProto(require(&#x27;./__pump/pipe&#x27;))
-		.assignProto(require(&#x27;./__pump/streams&#x27;));
+		.assignProto(require(&#x27;./__pump/streams/pump&#x27;))
+		.assignProto(require(&#x27;./__pump/streams/drain&#x27;))
+		.assignProto(require(&#x27;./__pump/streams/inject&#x27;));
 });
 
     </pre>
