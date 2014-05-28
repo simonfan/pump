@@ -1,12 +1,12 @@
 {
   "name": "pump",
   "main": "built/pump.js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Some module...",
   "dependencies": {
     "subject": "~0.5.8",
     "lodash": "~2.4.1",
-    "pipe": "0.4.4",
+    "pipe": "0.5.4",
     "q": "1.0.1"
   },
   "devDependencies": {
@@ -17,6 +17,6 @@
     "qunit": "*"
   },
   "resolutions": {
-    "q": "1.0.1"
+    "pipe": "0.5.4"
   }
 }
