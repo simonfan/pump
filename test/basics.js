@@ -214,7 +214,7 @@
 			// drain
 			dpump
 				// try to drain from NO SPECIFIED pipe
-				.drain()
+				.drain('pid1')
 				.then(function () {
 
 					// the default drained pipe is the first.
@@ -269,12 +269,8 @@
 					})
 					.to(d4);
 
-					// set a main pipe id
-					dpump.setDrainingPipe('pid3');
 
-					// drain from no explicit pipe,
-					// let default pipe id be used
-					return dpump.drain();
+					return dpump.drain('pid3');
 
 				})
 				.then(function () {

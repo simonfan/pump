@@ -35,16 +35,15 @@ define('__pump/pipe',['require','exports','module','lodash'],function (require, 
 		var _pipe = this._buildPipe(map, options);
 
 		// [4] store
-		// [4.1] if this is the first pipe of the pump,
-		//       set it as the drainingPipe
-		if (_.size(this.pipes) === 0) {
-			this.setDrainingPipe(id);
-		}
 		this.pipes[id] = _pipe;
 
 		return _pipe;
 	};
 	exports.pipe = exports.addPipe;
+
+	exports.getPipe = function getPipe(id) {
+		return this.pipes[id];
+	};
 
 	/**
 	 * Removes the pipe.
@@ -148,44 +147,19 @@ define('__pump/streams/drain',['require','exports','module','lodash','q'],functi
 		q = require('q');
 
 	/**
-	 * This method is called if no pipe is found for draining.
-	 * Returns the pipe from which the properties should be drained from.
-	 * By default returns the first pipe
-	 *
-	 * @type {String}
-	 */
-	exports.drainingPipe = void(0);
-
-	/**
-	 * [_drainingPipe description]
-	 * @private
-	 * @param  {[type]} properties [description]
-	 * @return {[type]}            [description]
-	 */
-	function _drainingPipe(properties) {
-		if (_.isString(this.drainingPipe)) {
-			// this.drainingPipe = 'pipe-id'
-			return this.pipes[this.drainingPipe];
-
-		} else if (_.isFunction(this.drainingPipe)) {
-			// this.drainingPipe = function () {}
-			return this.drainingPipe(properties);
-
-		} else if (_.isObject(this.drainingPipe)) {
-			// this.drainingPipe = pipe
-			return this.drainingPipe;
-		}
-	}
-
-	/**
 	 * Drains from a specific pipe.
 	 *
 	 * @param  {[type]} pipeId [description]
 	 * @return {[type]}        [description]
 	 */
 	exports.drain = function pumpDrain(pipeId, properties, force) {
+
+		if (!pipeId && pipeId !== 0) {
+			throw new Error('Drain must take a pipe id as first argument.');
+		}
+
 		// only drain from a single pipe.
-		var pipe = this.pipes[pipeId] || _drainingPipe.call(this, properties);
+		var pipe = this.pipes[pipeId];
 
 		if (!pipe) {
 			throw new Error('Pipe "' + pipeId + '" not found.');
@@ -194,18 +168,6 @@ define('__pump/streams/drain',['require','exports','module','lodash','q'],functi
 		// NO CACHING HERE,
 		// CACHE IS DONE AT PIPE-LEVEL
 		return pipe.drain(properties, force);
-	};
-
-	/**
-	 * Set a pipe to drain from.
-	 *
-	 * @param  {[type]} pipe_id_or_pipe_getter [description]
-	 * @return {[type]}        [description]
-	 */
-	exports.setDrainingPipe = function setDrainingPipe(pipe_id_or_pipe_getter) {
-		this.drainingPipe = pipe_id_or_pipe_getter;
-
-		return this;
 	};
 
 });
