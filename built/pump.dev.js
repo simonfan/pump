@@ -90,12 +90,11 @@ define('__pump/pipe',['require','exports','module','lodash'],function (require, 
 
 /* jshint ignore:end */
 
-define('__pump/streams/pump',['require','exports','module','lodash','q'],function (require, exports, module) {
+define('__pump/streams/pump',['require','exports','module','lodash'],function (require, exports, module) {
 
 	
 
-	var _ = require('lodash'),
-		q = require('q');
+	var _ = require('lodash');
 
 	/**
 	 * Picks the pipes and invokes their .pump method.
@@ -124,13 +123,13 @@ define('__pump/streams/pump',['require','exports','module','lodash','q'],functio
 		}
 
 		// invoke pump on all pipes and return the promise
-		var results = _.map(pipes, function (pipe) {
+		_.each(pipes, function (pipe) {
 			// NO CACHING HERE,
 			// CACHE IS DONE AT PIPE-LEVEL
-			return pipe.pump(properties, force);
+			pipe.pump(properties, force);
 		});
 
-		return q.all(results);
+		return this;
 	};
 
 });
@@ -139,12 +138,11 @@ define('__pump/streams/pump',['require','exports','module','lodash','q'],functio
 
 /* jshint ignore:end */
 
-define('__pump/streams/drain',['require','exports','module','lodash','q'],function (require, exports, module) {
+define('__pump/streams/drain',['require','exports','module','lodash'],function (require, exports, module) {
 
 	
 
-	var _ = require('lodash'),
-		q = require('q');
+	var _ = require('lodash');
 
 	/**
 	 * Drains from a specific pipe.
@@ -167,7 +165,9 @@ define('__pump/streams/drain',['require','exports','module','lodash','q'],functi
 
 		// NO CACHING HERE,
 		// CACHE IS DONE AT PIPE-LEVEL
-		return pipe.drain(properties, force);
+		pipe.drain(properties, force);
+
+		return this;
 	};
 
 });
@@ -176,12 +176,11 @@ define('__pump/streams/drain',['require','exports','module','lodash','q'],functi
 
 /* jshint ignore:end */
 
-define('__pump/streams/inject',['require','exports','module','lodash','q'],function (require, exports, module) {
+define('__pump/streams/inject',['require','exports','module','lodash'],function (require, exports, module) {
 
 	
 
-	var _ = require('lodash'),
-		q = require('q');
+	var _ = require('lodash');
 
 	/**
 	 * Sets data onto source
@@ -203,23 +202,18 @@ define('__pump/streams/inject',['require','exports','module','lodash','q'],funct
 		}
 
 		// [1] SET all data onto the SOURCE
-		var srcSetRes = _.map(data, function (value, key) {
+		_.each(data, function (value, key) {
 
 			// NO CACHING HERE,
 			// CACHE IS DONE AT PIPE-LEVEL
-			return set.call(this, this.source, key, value);
+			set.call(this, this.source, key, value);
 
 		}, this);
 
+		// [2] pump (pipeids, force = true)
+		this.pump(pipeIds, null, true);
 
-		// [2] wait for all srcSets
-		return q.all(srcSetRes)
-			// [2.1] then invoke pump on success
-			//       wrap in a method in order to guarantee
-			//       pump is invoked with NO ARGUMENTS
-			.then(_.bind(function () { this.pump(pipeIds); }, this))
-			// [2.2] or throw error
-			.fail(function (e) { throw e; });
+		return this;
 	};
 
 
@@ -264,7 +258,7 @@ define('pump',['require','exports','module','subject','lodash','pipe','./__pump/
 		 *         Pipe definitions: { pipeId: { pipelines } }
 		 * @return {[type]}       [description]
 		 */
-		initialize: function initializePump(source, pipes) {
+		initialize: function initializePump(source) {
 
 			/**
 			 * Source of all pipes that will come from this pump.
@@ -285,11 +279,6 @@ define('pump',['require','exports','module','subject','lodash','pipe','./__pump/
 			 * @type {Object}
 			 */
 			this.pipes = {};
-
-			// build pipes defined on initialization.
-			_.each(pipes, function (lines, id) {
-				this.pipe(id, lines);
-			}, this);
 		},
 
 		from: function pumpFrom(source) {

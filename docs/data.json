@@ -59,7 +59,7 @@
     "classitems": [
         {
             "file": "src/__pump/streams/drain.js",
-            "line": 12,
+            "line": 11,
             "description": "Drains from a specific pipe.",
             "params": [
                 {
@@ -76,7 +76,7 @@
         },
         {
             "file": "src/__pump/streams/inject.js",
-            "line": 12,
+            "line": 11,
             "description": "Sets data onto source\nand pumps data into pipes.",
             "params": [
                 {
@@ -98,7 +98,7 @@
         },
         {
             "file": "src/__pump/streams/pump.js",
-            "line": 12,
+            "line": 11,
             "description": "Picks the pipes and invokes their .pump method.",
             "params": [
                 {
@@ -205,15 +205,15 @@
     "warnings": [
         {
             "message": "Missing item type\nDrains from a specific pipe.",
-            "line": " src/__pump/streams/drain.js:12"
+            "line": " src/__pump/streams/drain.js:11"
         },
         {
             "message": "Missing item type\nSets data onto source\nand pumps data into pipes.",
-            "line": " src/__pump/streams/inject.js:12"
+            "line": " src/__pump/streams/inject.js:11"
         },
         {
             "message": "Missing item type\nPicks the pipes and invokes their .pump method.",
-            "line": " src/__pump/streams/pump.js:12"
+            "line": " src/__pump/streams/pump.js:11"
         },
         {
             "message": "Missing item type\nCreates a pipe on this",

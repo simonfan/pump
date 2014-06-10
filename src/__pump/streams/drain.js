@@ -6,8 +6,7 @@ define(function (require, exports, module) {
 
 	'use strict';
 
-	var _ = require('lodash'),
-		q = require('q');
+	var _ = require('lodash');
 
 	/**
 	 * Drains from a specific pipe.
@@ -30,7 +29,9 @@ define(function (require, exports, module) {
 
 		// NO CACHING HERE,
 		// CACHE IS DONE AT PIPE-LEVEL
-		return pipe.drain(properties, force);
+		pipe.drain(properties, force);
+
+		return this;
 	};
 
 });

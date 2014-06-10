@@ -37,7 +37,7 @@ define(function (require, exports, module) {
 		 *         Pipe definitions: { pipeId: { pipelines } }
 		 * @return {[type]}       [description]
 		 */
-		initialize: function initializePump(source, pipes) {
+		initialize: function initializePump(source) {
 
 			/**
 			 * Source of all pipes that will come from this pump.
@@ -58,11 +58,6 @@ define(function (require, exports, module) {
 			 * @type {Object}
 			 */
 			this.pipes = {};
-
-			// build pipes defined on initialization.
-			_.each(pipes, function (lines, id) {
-				this.pipe(id, lines);
-			}, this);
 		},
 
 		from: function pumpFrom(source) {

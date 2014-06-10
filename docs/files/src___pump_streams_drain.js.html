@@ -94,8 +94,7 @@ define(function (require, exports, module) {
 
 	&#x27;use strict&#x27;;
 
-	var _ = require(&#x27;lodash&#x27;),
-		q = require(&#x27;q&#x27;);
+	var _ = require(&#x27;lodash&#x27;);
 
 	/**
 	 * Drains from a specific pipe.
@@ -118,7 +117,9 @@ define(function (require, exports, module) {
 
 		// NO CACHING HERE,
 		// CACHE IS DONE AT PIPE-LEVEL
-		return pipe.drain(properties, force);
+		pipe.drain(properties, force);
+
+		return this;
 	};
 
 });

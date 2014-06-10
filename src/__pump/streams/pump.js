@@ -6,8 +6,7 @@ define(function (require, exports, module) {
 
 	'use strict';
 
-	var _ = require('lodash'),
-		q = require('q');
+	var _ = require('lodash');
 
 	/**
 	 * Picks the pipes and invokes their .pump method.
@@ -36,13 +35,13 @@ define(function (require, exports, module) {
 		}
 
 		// invoke pump on all pipes and return the promise
-		var results = _.map(pipes, function (pipe) {
+		_.each(pipes, function (pipe) {
 			// NO CACHING HERE,
 			// CACHE IS DONE AT PIPE-LEVEL
-			return pipe.pump(properties, force);
+			pipe.pump(properties, force);
 		});
 
-		return q.all(results);
+		return this;
 	};
 
 });
